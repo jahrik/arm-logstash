@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y \
   libzmq5 \
   wget \
   vim \
+  git \
   ant
 RUN rm -rf /var/lib/apt/lists/*
 
@@ -21,6 +22,8 @@ RUN git clone https://github.com/jnr/jffi.git
 RUN cd jffi && \
   ant jar && \
   cp build/jni/libjffi-1.2.so /opt/logstash/vendor/jruby/lib/jni/arm-Linux
+
+RUN apt-get remove --purge -y git
 
 # the "ffi-rzmq-core" gem is very picky about where it looks for libzmq.so
 RUN mkdir -p /usr/local/lib \
