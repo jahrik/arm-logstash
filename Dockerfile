@@ -23,7 +23,7 @@ RUN mkdir -p /opt/logstash/vendor/jruby/lib/jni
 RUN cd jffi && \
   ant jar && \
   cp build/jni/libjffi-1.2.so /opt/logstash/vendor/jruby/lib/jni/arm-Linux
-
+RUN rm -rf ./jffi
 RUN apt-get remove --purge -y git
 
 # the "ffi-rzmq-core" gem is very picky about where it looks for libzmq.so
