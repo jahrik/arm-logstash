@@ -54,13 +54,6 @@ RUN sha1sum logstash-${LOGSTASH_VERSION}.tar.gz
 RUN tar -xzf logstash-${LOGSTASH_VERSION}.tar.gz -C ${LOGSTASH_HOME} --strip-components 1
 RUN rm logstash-${LOGSTASH_VERSION}.tar.gz
 
-# Symlink the config file changes made at run time
-# to the config file logstash uses by default
-RUN mkdir -p /etc/logstash
-RUN ln -sf ${LOGSTASH_HOME}/config/logstash.yml /etc/logstash/logstash.yml
-RUN chown -R logstash:logstash ${LOGSTASH_HOME}
-RUN chown -R logstash:logstash /etc/logstash/
-
 # https://discuss.elastic.co/t/i-cannot-run-logstash-on-raspberry-pi3/109789
 # /usr/share/logstash/vendor/jruby/lib/jni/arm-Linux/libjffi-1.2.so
 RUN git clone https://github.com/jnr/jffi.git
@@ -80,7 +73,8 @@ ENV PATH ${LOGSTASH_HOME}/bin:$PATH
 # RUN sed -ri "s!^(\#\s*)?(elasticsearch\.url:).*!\2 'http://elasticsearch:9200'!" ${LOGSTASH_HOME}/config/logstash.yml
 # RUN grep -q "^elasticsearch\.url: 'http://elasticsearch:9200'\$" ${LOGSTASH_HOME}/config/logstash.yml
 
-ENV LS_SETTINGS_DIR /etc/logstash
+ENV LOGSTASH_HOME /usr/share/logstash
+ENV LS_SETTINGS_DIR ${LOGSTAH_HOME}/config
 # comment out some troublesome configuration parameters
 #   path.config: No config files found: /etc/logstash/conf.d/*
 RUN set -ex; \
@@ -91,7 +85,19 @@ RUN set -ex; \
 	if [ -f "$LS_SETTINGS_DIR/log4j2.properties" ]; then \
 		cp "$LS_SETTINGS_DIR/log4j2.properties" "$LS_SETTINGS_DIR/log4j2.properties.dist"; \
 		truncate --size=0 "$LS_SETTINGS_DIR/log4j2.properties"; \
-	fi
+	fi; \
+# Lower java initial heap size in jvm.options
+	sed -ri 's/^-Xms1g/-Xms500m/g' "$LS_SETTINGS_DIR/jvm.options"; \
+	sed -ri 's/^-Xmx1g/-Xmx500m/g' "$LS_SETTINGS_DIR/jvm.options"; \
+
+# Symlink the config file changes made
+# to the config files logstash uses by default
+RUN mkdir -p /etc/logstash
+RUN ln -sf ${LOGSTASH_HOME}/config/logstash.yml /etc/logstash/logstash.yml
+RUN ln -sf ${LOGSTASH_HOME}/config/log4j2.properties /etc/logstash/log4j2.properties
+RUN ln -sf ${LOGSTASH_HOME}/config/jvm.options /etc/logstash/jvm.options
+RUN chown -R logstash:logstash ${LOGSTASH_HOME}
+RUN chown -R logstash:logstash /etc/logstash
 
 COPY docker-entrypoint.sh /
 RUN chmod +x /docker-entrypoint.sh
