@@ -92,7 +92,7 @@ RUN set -ex; \
 	if [ -f "$LS_SETTINGS_DIR/log4j2.properties" ]; then \
 		cp "$LS_SETTINGS_DIR/log4j2.properties" "$LS_SETTINGS_DIR/log4j2.properties.dist"; \
 		truncate --size=0 "$LS_SETTINGS_DIR/log4j2.properties"; \
-	fi; \
+	fi;
 
 # Symlink the config file changes made
 # to the config files logstash uses by default
