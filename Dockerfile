@@ -1,4 +1,4 @@
-FROM arm32v7/openjdk:8-jre
+FROM arm32v7/openjdk:8-jdk
 
 # Add logstash user and group first to make sure their IDs get assigned consistently
 RUN groupadd -r logstash && useradd -r -m -g logstash logstash
