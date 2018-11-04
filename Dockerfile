@@ -45,10 +45,10 @@ ENV LOGSTASH_HOME /usr/share/logstash
 WORKDIR ${LOGSTASH_HOME}
 
 # Install from tar file
-RUN wget https://artifacts.elastic.co/downloads/logstash/logstash-${LOGSTASH_VERSION}-linux-x86.tar.gz
-RUN sha1sum logstash-${LOGSTASH_VERSION}-linux-x86.tar.gz
-RUN tar -xzf logstash-${LOGSTASH_VERSION}-linux-x86.tar.gz -C ${LOGSTASH_HOME} --strip-components 1
-RUN rm logstash-${LOGSTASH_VERSION}-linux-x86.tar.gz
+RUN wget https://artifacts.elastic.co/downloads/logstash/logstash-${LOGSTASH_VERSION}.tar.gz
+RUN sha1sum logstash-${LOGSTASH_VERSION}.tar.gz
+RUN tar -xzf logstash-${LOGSTASH_VERSION}.tar.gz -C ${LOGSTASH_HOME} --strip-components 1
+RUN rm logstash-${LOGSTASH_VERSION}.tar.gz
 
 # Symlink the config file changes made at run time
 # to the config file logstash uses by default
