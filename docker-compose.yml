@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+
+  logstash:
+    image: jahrik/arm-logstash:arm32v7
+    environment:
+      ELASTICSEARCH_URL: "${ELASTICSEARCH_URL}"
+    ports:
+      - 5000:5000
+      - 5400:5400
+    deploy:
+      placement:
+        constraints:
+          - node.labels.arch == arm32v7

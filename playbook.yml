@@ -1,0 +1,10 @@
+---
+- hosts: elk
+  become: true
+  become_method: sudo
+  tasks:
+    - name: Create logstash config dir
+      file:
+        path: /etc/logstash
+        state: directory
+        mode: 0755
