@@ -8,9 +8,12 @@ RUN apt-get update && apt-get install -y \
   --no-install-recommends \
   apt-transport-https \
   ca-certificates \
+  build-essential \
+  texinfo \
   libzmq5 \
   wget \
-  vim
+  vim \
+  ant
 RUN rm -rf /var/lib/apt/lists/*
 
 # the "ffi-rzmq-core" gem is very picky about where it looks for libzmq.so
@@ -56,6 +59,12 @@ RUN mkdir -p /etc/logstash
 RUN ln -sf ${LOGSTASH_HOME}/config/logstash.yml /etc/logstash/logstash.yml
 RUN chown -R logstash:logstash ${LOGSTASH_HOME}
 RUN chown -R logstash:logstash /etc/logstash/
+
+# https://discuss.elastic.co/t/i-cannot-run-logstash-on-raspberry-pi3/109789
+RUN git clone https://github.com/jnr/jffi.git
+RUN cd jffi && \
+  ant jar && \
+  cp build/jni/libjffi-1.2.so /opt/logstash/vendor/jruby/lib/jni/arm-Linux
 
 ENV PATH ${LOGSTASH_HOME}/bin:$PATH
 
