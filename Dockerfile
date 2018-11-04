@@ -54,6 +54,8 @@ RUN sha1sum logstash-${LOGSTASH_VERSION}.tar.gz
 RUN tar -xzf logstash-${LOGSTASH_VERSION}.tar.gz -C ${LOGSTASH_HOME} --strip-components 1
 RUN rm logstash-${LOGSTASH_VERSION}.tar.gz
 
+ENV PATH ${LOGSTASH_HOME}/bin:$PATH
+
 # https://discuss.elastic.co/t/i-cannot-run-logstash-on-raspberry-pi3/109789
 # /usr/share/logstash/vendor/jruby/lib/jni/arm-Linux/libjffi-1.2.so
 RUN git clone https://github.com/jnr/jffi.git
@@ -64,8 +66,6 @@ RUN cd jffi && \
 RUN rm -rf ./jffi
 RUN apt-get remove --purge -y git
 
-ENV PATH ${LOGSTASH_HOME}/bin:$PATH
-
 # # the default "server.host" is "localhost" in 5+
 # RUN sed -ri "s!^(\#\s*)?(server\.host:).*!\2 '0.0.0.0'!" ${LOGSTASH_HOME}/config/logstash.yml
 # RUN grep -q "^server\.host: '0.0.0.0'\$" ${LOGSTASH_HOME}/config/logstash.yml
@@ -74,21 +74,25 @@ ENV PATH ${LOGSTASH_HOME}/bin:$PATH
 # RUN grep -q "^elasticsearch\.url: 'http://elasticsearch:9200'\$" ${LOGSTASH_HOME}/config/logstash.yml
 
 ENV LOGSTASH_HOME /usr/share/logstash
-ENV LS_SETTINGS_DIR ${LOGSTAH_HOME}/config
+ENV LS_SETTINGS_DIR ${LOGSTASH_HOME}/config
 # comment out some troublesome configuration parameters
 #   path.config: No config files found: /etc/logstash/conf.d/*
 RUN set -ex; \
 	if [ -f "$LS_SETTINGS_DIR/logstash.yml" ]; then \
 		sed -ri 's!^path\.config:!#&!g' "$LS_SETTINGS_DIR/logstash.yml"; \
 	fi; \
-# if the "log4j2.properties" file exists (logstash 5.x), let's empty it out so we get the default: "logging only errors to the console"
+# Lower java initial heap size in jvm.options
+	if [ -f "$LS_SETTINGS_DIR/jvm.options" ]; then \
+	  sed -ri 's/^-Xms1g/-Xms500m/g' "$LS_SETTINGS_DIR/jvm.options"; \
+	  sed -ri 's/^-Xmx1g/-Xmx500m/g' "$LS_SETTINGS_DIR/jvm.options"; \
+	fi; \
+# if the "log4j2.properties" file exists (logstash 5.x),
+# let's empty it out so we get the default:
+# "logging only errors to the console"
 	if [ -f "$LS_SETTINGS_DIR/log4j2.properties" ]; then \
 		cp "$LS_SETTINGS_DIR/log4j2.properties" "$LS_SETTINGS_DIR/log4j2.properties.dist"; \
 		truncate --size=0 "$LS_SETTINGS_DIR/log4j2.properties"; \
 	fi; \
-# Lower java initial heap size in jvm.options
-	sed -ri 's/^-Xms1g/-Xms500m/g' "$LS_SETTINGS_DIR/jvm.options"; \
-	sed -ri 's/^-Xmx1g/-Xmx500m/g' "$LS_SETTINGS_DIR/jvm.options"; \
 
 # Symlink the config file changes made
 # to the config files logstash uses by default
