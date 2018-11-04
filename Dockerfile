@@ -17,15 +17,6 @@ RUN apt-get update && apt-get install -y \
   ant
 RUN rm -rf /var/lib/apt/lists/*
 
-# https://discuss.elastic.co/t/i-cannot-run-logstash-on-raspberry-pi3/109789
-RUN git clone https://github.com/jnr/jffi.git
-RUN mkdir -p /opt/logstash/vendor/jruby/lib/jni
-RUN cd jffi && \
-  ant jar && \
-  cp build/jni/libjffi-1.2.so /opt/logstash/vendor/jruby/lib/jni/arm-Linux
-RUN rm -rf ./jffi
-RUN apt-get remove --purge -y git
-
 # the "ffi-rzmq-core" gem is very picky about where it looks for libzmq.so
 RUN mkdir -p /usr/local/lib \
 	&& ln -s /usr/lib/*/libzmq.so.3 /usr/local/lib/libzmq.so
@@ -69,6 +60,16 @@ RUN mkdir -p /etc/logstash
 RUN ln -sf ${LOGSTASH_HOME}/config/logstash.yml /etc/logstash/logstash.yml
 RUN chown -R logstash:logstash ${LOGSTASH_HOME}
 RUN chown -R logstash:logstash /etc/logstash/
+
+# https://discuss.elastic.co/t/i-cannot-run-logstash-on-raspberry-pi3/109789
+# /usr/share/logstash/vendor/jruby/lib/jni/arm-Linux/libjffi-1.2.so
+RUN git clone https://github.com/jnr/jffi.git
+RUN mkdir -p ${LOGSTASH_HOME}/vendor/jruby/lib/jni/arm-Linux
+RUN cd jffi && \
+  ant jar && \
+  cp build/jni/libjffi-1.2.so ${LOGSTASH_HOME}/vendor/jruby/lib/jni/arm-Linux/
+RUN rm -rf ./jffi
+RUN apt-get remove --purge -y git
 
 ENV PATH ${LOGSTASH_HOME}/bin:$PATH
 
