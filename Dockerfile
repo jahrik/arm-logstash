@@ -19,6 +19,7 @@ RUN rm -rf /var/lib/apt/lists/*
 
 # https://discuss.elastic.co/t/i-cannot-run-logstash-on-raspberry-pi3/109789
 RUN git clone https://github.com/jnr/jffi.git
+RUN mkdir -p /opt/logstash/vendor/jruby/lib/jni
 RUN cd jffi && \
   ant jar && \
   cp build/jni/libjffi-1.2.so /opt/logstash/vendor/jruby/lib/jni/arm-Linux
