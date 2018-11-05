@@ -8,7 +8,7 @@ services:
       ELASTICSEARCH_URL: "${ELASTICSEARCH_URL}"
     ports:
       - 5000:5000
-      - 5400:5400
+      - 5044:5044
     deploy:
       placement:
         constraints:
