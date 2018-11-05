@@ -8,7 +8,7 @@ fi
 
 # Pull elasticsearch url from env
 if [ "$ELASTICSEARCH_URL" ]; then
-  sed -ri "s!hosts => \"*:9200\"!hosts => \"$ELASTICSEARCH_URL:9200\"!" /usr/share/logstash/config/logstash.conf
+  sed -ri "s!hosts => \"*:9200\"!hosts => \"$ELASTICSEARCH_URL:9200\"!" /etc/logstash/conf.d/logstash.conf
 fi
 
 # Run as user "logstash" if the command is "logstash"
