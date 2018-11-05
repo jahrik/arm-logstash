@@ -99,4 +99,4 @@ COPY docker-entrypoint.sh /
 RUN chmod +x /docker-entrypoint.sh
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["-f", "/etc/logstash/logstash.conf"]
+CMD ["-f", "/etc/logstash/conf.d/logstash.conf"]
