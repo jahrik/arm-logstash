@@ -109,4 +109,4 @@ COPY docker-entrypoint.sh /
 RUN chmod +x /docker-entrypoint.sh
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["-f", "${LS_SETTINGS_DIR}/logstash.conf"]
+CMD -f ${LS_SETTINGS_DIR}/logstash.conf
