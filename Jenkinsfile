@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-env.ELASTICSEARCH_URL = 'http://es_venus:9200'
+env.ELASTICSEARCH_URL = 'http://venus:9200'
 
 node('arm32v7') {
 
