@@ -14,4 +14,4 @@ services:
     deploy:
       placement:
         constraints:
-          - node.labels.arch == arm32v7
+          - node.labels.arch == aarch64
