@@ -66,47 +66,38 @@ RUN cd jffi && \
 RUN rm -rf ./jffi
 RUN apt-get remove --purge -y git
 
-# # the default "server.host" is "localhost" in 5+
-# RUN sed -ri "s!^(\#\s*)?(server\.host:).*!\2 '0.0.0.0'!" ${LOGSTASH_HOME}/config/logstash.yml
-# RUN grep -q "^server\.host: '0.0.0.0'\$" ${LOGSTASH_HOME}/config/logstash.yml
-# # ensure the default configuration is useful when using --link
-# RUN sed -ri "s!^(\#\s*)?(elasticsearch\.url:).*!\2 'http://elasticsearch:9200'!" ${LOGSTASH_HOME}/config/logstash.yml
-# RUN grep -q "^elasticsearch\.url: 'http://elasticsearch:9200'\$" ${LOGSTASH_HOME}/config/logstash.yml
+# Symlink the config files
+ENV LOGSTASH_ETC /etc/logstash
+RUN mkdir -p ${LOGSTASH_ETC}
+COPY logstash.conf ${LOGSTASH_ETC}/conf.d/logstash.conf
+RUN ln -sf ${LOGSTASH_HOME}/config/logstash.conf ${LOGSTASH_ETC}/logstash.conf
+RUN ln -sf ${LOGSTASH_HOME}/config/log4j2.properties ${LOGSTASH_ETC}/log4j2.properties
+RUN ln -sf ${LOGSTASH_HOME}/config/logstash.yml ${LOGSTASH_ETC}/logstash.yml
+RUN ln -sf ${LOGSTASH_HOME}/config/jvm.options ${LOGSTASH_ETC}/jvm.options
+RUN chown -R logstash:logstash ${LOGSTASH_HOME}
+RUN chown -R logstash:logstash ${LOGSTASH_ETC}
 
-ENV LOGSTASH_HOME /usr/share/logstash
-ENV LS_SETTINGS_DIR ${LOGSTASH_HOME}/config
 # comment out some troublesome configuration parameters
 #   path.config: No config files found: /etc/logstash/conf.d/*
 RUN set -ex; \
-	if [ -f "$LS_SETTINGS_DIR/logstash.yml" ]; then \
-		sed -ri 's!^path\.config:!#&!g' "$LS_SETTINGS_DIR/logstash.yml"; \
+	if [ -f "$LOGSTASH_ETC/logstash.yml" ]; then \
+		sed -ri 's!^path\.config:!#&!g' "$LOGSTASH_ETC/logstash.yml"; \
 	fi; \
 # Lower java initial heap size in jvm.options
-	if [ -f "$LS_SETTINGS_DIR/jvm.options" ]; then \
-	  sed -ri 's/^-Xms1g/-Xms500m/g' "$LS_SETTINGS_DIR/jvm.options"; \
-	  sed -ri 's/^-Xmx1g/-Xmx500m/g' "$LS_SETTINGS_DIR/jvm.options"; \
+	if [ -f "$LOGSTASH_ETC/jvm.options" ]; then \
+	  sed -ri 's/^-Xms1g/-Xms500m/g' "$LOGSTASH_ETC/jvm.options"; \
+	  sed -ri 's/^-Xmx1g/-Xmx500m/g' "$LOGSTASH_ETC/jvm.options"; \
 	fi; \
 # if the "log4j2.properties" file exists (logstash 5.x),
 # let's empty it out so we get the default:
 # "logging only errors to the console"
-	if [ -f "$LS_SETTINGS_DIR/log4j2.properties" ]; then \
-		cp "$LS_SETTINGS_DIR/log4j2.properties" "$LS_SETTINGS_DIR/log4j2.properties.dist"; \
-		truncate --size=0 "$LS_SETTINGS_DIR/log4j2.properties"; \
+	if [ -f "$LOGSTASH_ETC/log4j2.properties" ]; then \
+		cp "$LOGSTASH_ETC/log4j2.properties" "$LOGSTASH_ETC/log4j2.properties.dist"; \
+		truncate --size=0 "$LOGSTASH_ETC/log4j2.properties"; \
 	fi;
-
-# Symlink the config file changes made
-# to the config files logstash uses by default
-RUN mkdir -p /etc/logstash
-COPY logstash.conf ${LS_SETTINGS_DIR}/logstash.conf
-RUN ln -sf ${LS_SETTINGS_DIR}/logstash.conf /etc/logstash/logstash.conf
-RUN ln -sf ${LS_SETTINGS_DIR}/logstash.yml /etc/logstash/logstash.yml
-RUN ln -sf ${LS_SETTINGS_DIR}/log4j2.properties /etc/logstash/log4j2.properties
-RUN ln -sf ${LS_SETTINGS_DIR}/jvm.options /etc/logstash/jvm.options
-RUN chown -R logstash:logstash ${LOGSTASH_HOME}
-RUN chown -R logstash:logstash /etc/logstash
 
 COPY docker-entrypoint.sh /
 RUN chmod +x /docker-entrypoint.sh
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["logstash -f ${LS_SETTINGS_DIR}/logstash.conf"]
+CMD ["-f", "/etc/logstash/logstash.conf"]
