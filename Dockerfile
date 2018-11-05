@@ -97,6 +97,7 @@ RUN set -ex; \
 # Symlink the config file changes made
 # to the config files logstash uses by default
 RUN mkdir -p /etc/logstash
+COPY logstash.conf ${LOGSTASH_HOME}/config/logstash.yml
 RUN ln -sf ${LOGSTASH_HOME}/config/logstash.yml /etc/logstash/logstash.yml
 RUN ln -sf ${LOGSTASH_HOME}/config/log4j2.properties /etc/logstash/log4j2.properties
 RUN ln -sf ${LOGSTASH_HOME}/config/jvm.options /etc/logstash/jvm.options
