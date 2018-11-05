@@ -6,10 +6,10 @@ if [ "${1#-}" != "$1" ]; then
 	set -- logstash "$@"
 fi
 
-# Pull elasticsearch url from env
-if [ "$ELASTICSEARCH_URL" ]; then
-  sed -ri "s!hosts => \"*:9200\"!hosts => \"$ELASTICSEARCH_URL:9200\"!" /etc/logstash/logstash.conf
-fi
+# # Pull elasticsearch url from env
+# if [ "$ELASTICSEARCH_URL" ]; then
+#   sed -ri "s/hosts => \"*:9200\"/hosts => \"$ELASTICSEARCH_URL\"/g" /etc/logstash/logstash.conf
+# fi
 
 # Run as user "logstash" if the command is "logstash"
 # allow the container to be started with `--user`

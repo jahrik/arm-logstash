@@ -9,6 +9,8 @@ services:
     ports:
       - 5000:5000
       - 5044:5044
+    volumes:
+      - /etc/logstash/:/etc/logstash/
     deploy:
       placement:
         constraints:

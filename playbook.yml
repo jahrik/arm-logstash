@@ -2,9 +2,18 @@
 - hosts: elk
   become: true
   become_method: sudo
+  vars:
+    elasticsearch_url: "{{ lookup('env','ELASTICSEARCH_URL') }}"
   tasks:
     - name: Create logstash config dir
       file:
         path: /etc/logstash
         state: directory
         mode: 0755
+
+    - name: Generate logstash.conf from template
+      template:
+        src: logstash.conf.j2
+        dest: /etc/logstash/logstash.conf
+        owner: 999
+        group: 999
