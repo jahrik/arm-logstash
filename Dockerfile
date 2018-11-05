@@ -70,7 +70,6 @@ RUN apt-get remove --purge -y git
 ENV LOGSTASH_ETC /etc/logstash
 RUN mkdir -p ${LOGSTASH_ETC}
 COPY logstash.conf ${LOGSTASH_ETC}/conf.d/logstash.conf
-RUN ln -sf ${LOGSTASH_HOME}/config/logstash.conf ${LOGSTASH_ETC}/logstash.conf
 RUN ln -sf ${LOGSTASH_HOME}/config/log4j2.properties ${LOGSTASH_ETC}/log4j2.properties
 RUN ln -sf ${LOGSTASH_HOME}/config/logstash.yml ${LOGSTASH_ETC}/logstash.yml
 RUN ln -sf ${LOGSTASH_HOME}/config/jvm.options ${LOGSTASH_ETC}/jvm.options
