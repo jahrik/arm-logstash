@@ -7,7 +7,7 @@ services:
     environment:
       ELASTICSEARCH_URL: "${ELASTICSEARCH_URL}"
     ports:
-      - 5000:5000
+      - 5000:5000/udp
       - 5044:5044
     volumes:
       - /etc/logstash/:/etc/logstash/
