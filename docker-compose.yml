@@ -3,7 +3,7 @@ version: '3'
 services:
 
   logstash:
-    image: jahrik/arm-logstash:arm32v7
+    image: jahrik/arm-logstash:aarch64
     environment:
       ELASTICSEARCH_URL: "${ELASTICSEARCH_URL}"
     ports:
