@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y \
   libzmq5 \
   wget \
   vim \
+  gpg \
   git \
   ant
 RUN rm -rf /var/lib/apt/lists/*
