@@ -1,12 +1,11 @@
-FROM aarch64/openjdk:8-jdk-slim
+FROM arm64v8/openjdk:8-jdk-slim
 
 # Add logstash user and group first to make sure their IDs get assigned consistently
 RUN groupadd -r logstash && useradd -r -m -g logstash logstash
 
 # Dependencies
 # returned a non-zero code: 100
-RUN apt-get update
-RUN apt-get install -y \
+RUN apt-get update && apt-get install -y \
   --no-install-recommends \
   apt-transport-https \
   ca-certificates \
