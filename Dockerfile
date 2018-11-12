@@ -1,4 +1,4 @@
-FROM arm64v8/ubuntu
+FROM jahrik/arm-gosu-tini:aarch64
 
 # Add logstash user and group first to make sure their IDs get assigned consistently
 RUN groupadd -r logstash && useradd -r -m -g logstash logstash
@@ -7,15 +7,6 @@ RUN groupadd -r logstash && useradd -r -m -g logstash logstash
 # returned a non-zero code: 100
 RUN apt-get update && apt-get install -y \
   openjdk-8-jdk-headless \
-  apt-transport-https \
-  ca-certificates \
-  build-essential \
-  texinfo \
-  dirmngr \
-  libzmq5 \
-  wget \
-  vim \
-  gpg \
   git \
   ant
 RUN rm -rf /var/lib/apt/lists/*
@@ -24,26 +15,15 @@ RUN rm -rf /var/lib/apt/lists/*
 RUN mkdir -p /usr/local/lib \
 	&& ln -s /usr/lib/*/libzmq.so.3 /usr/local/lib/libzmq.so
 
-# gosu
-# grab gosu for easy step-down from root
-RUN set -eux; \
-	apt-get update; \
-	apt-get install -y gosu; \
-	rm -rf /var/lib/apt/lists/*; \
-# verify that the binary works
-	gosu nobody true
-
-# Tini
-# For signal processing and zombie killing
-ENV TINI_VERSION v0.18.0
-ENV ARCH arm64
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-${ARCH} /usr/local/bin/tini
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-${ARCH}.asc /usr/local/bin/tini.asc
-RUN gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 595E85A6B1B4779EA4DAAEC70B588DFF0527A9B7
-RUN gpg --verify /usr/local/bin/tini.asc
-RUN rm -rf /usr/local/bin/tini.asc
-RUN chmod +x /usr/local/bin/tini
-RUN tini -h
+# https://discuss.elastic.co/t/i-cannot-run-logstash-on-raspberry-pi3/109789
+# /usr/share/logstash/vendor/jruby/lib/jni/arm-Linux/libjffi-1.2.so
+RUN git clone https://github.com/jnr/jffi.git
+RUN mkdir -p ${LOGSTASH_HOME}/vendor/jruby/lib/jni/arm-Linux
+RUN cd jffi && \
+  ant jar && \
+  cp build/jni/libjffi-1.2.so ${LOGSTASH_HOME}/vendor/jruby/lib/jni/arm-Linux/
+RUN rm -rf ./jffi
+RUN apt-get remove --purge -y git
 
 # Logstash
 # https://www.elastic.co/guide/en/logstash/5.6/docker.html
@@ -58,16 +38,6 @@ RUN tar -xzf logstash-${LOGSTASH_VERSION}.tar.gz -C ${LOGSTASH_HOME} --strip-com
 RUN rm logstash-${LOGSTASH_VERSION}.tar.gz
 
 ENV PATH ${LOGSTASH_HOME}/bin:$PATH
-
-# https://discuss.elastic.co/t/i-cannot-run-logstash-on-raspberry-pi3/109789
-# /usr/share/logstash/vendor/jruby/lib/jni/arm-Linux/libjffi-1.2.so
-RUN git clone https://github.com/jnr/jffi.git
-RUN mkdir -p ${LOGSTASH_HOME}/vendor/jruby/lib/jni/arm-Linux
-RUN cd jffi && \
-  ant jar && \
-  cp build/jni/libjffi-1.2.so ${LOGSTASH_HOME}/vendor/jruby/lib/jni/arm-Linux/
-RUN rm -rf ./jffi
-RUN apt-get remove --purge -y git
 
 # Symlink the config files
 ENV LOGSTASH_ETC /etc/logstash
