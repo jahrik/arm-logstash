@@ -1,4 +1,4 @@
-FROM arm64v8/openjdk:8-jdk-slim
+FROM arm64v8/ubuntu
 
 # Add logstash user and group first to make sure their IDs get assigned consistently
 RUN groupadd -r logstash && useradd -r -m -g logstash logstash
@@ -7,6 +7,7 @@ RUN groupadd -r logstash && useradd -r -m -g logstash logstash
 # returned a non-zero code: 100
 RUN apt-get update && apt-get install -y \
   --no-install-recommends \
+  openjdk-8-jdk-headless \
   apt-transport-https \
   ca-certificates \
   build-essential \
