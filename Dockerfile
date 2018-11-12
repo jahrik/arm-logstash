@@ -32,9 +32,9 @@ ENV LS_VERSION 5.6.12
 ENV LS_URL https://artifacts.elastic.co/downloads/logstash/
 ENV LS_HOME /usr/share/logstash
 WORKDIR ${LS_HOME}
-RUN wget ${LS_URL}elasticsearch-${LS_VERSION}.deb && \
-  dpkg -i elasticsearch-${LS_VERSION}.deb && \
-  rm elasticsearch-${LS_VERSION}.deb
+RUN wget ${LS_URL}logstash-${LS_VERSION}.deb && \
+  dpkg -i logstash-${LS_VERSION}.deb && \
+  rm logstash-${LS_VERSION}.deb
 
 # # Install from tar file
 # RUN wget https://artifacts.elastic.co/downloads/logstash/logstash-${LS_VERSION}.tar.gz
