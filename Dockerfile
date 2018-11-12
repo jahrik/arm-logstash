@@ -7,9 +7,8 @@ RUN groupadd -r logstash && useradd -r -m -g logstash logstash
 # returned a non-zero code: 100
 RUN apt-get update && apt-get install -y \
   openjdk-8-jdk-headless \
-  git \
-  ant
-RUN rm -rf /var/lib/apt/lists/*
+  wget \
+  && rm -rf /var/lib/apt/lists/*
 
 # # the "ffi-rzmq-core" gem is very picky about where it looks for libzmq.so
 # RUN mkdir -p /usr/local/lib \
