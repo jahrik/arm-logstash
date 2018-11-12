@@ -4,9 +4,11 @@ FROM aarch64/openjdk:8-jdk
 RUN groupadd -r logstash && useradd -r -m -g logstash logstash
 
 # Dependencies
+# returned a non-zero code: 100
+RUN apt-get update && apt-get install -y \
+  apt-transport-https
 RUN apt-get update && apt-get install -y \
   --no-install-recommends \
-  apt-transport-https \
   ca-certificates \
   build-essential \
   texinfo \
