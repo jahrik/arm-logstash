@@ -1,4 +1,4 @@
-FROM aarch64/openjdk:8-jdk
+FROM aarch64/openjdk:8-jdk-slim
 
 # Add logstash user and group first to make sure their IDs get assigned consistently
 RUN groupadd -r logstash && useradd -r -m -g logstash logstash
