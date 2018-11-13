@@ -47,6 +47,7 @@ ENV PATH ${LS_HOME}/bin:$PATH
 # Symlink the config files
 ENV LS_ETC /etc/logstash
 RUN mkdir -p ${LS_ETC}
+RUN mkdir -p ${LS_HOME}/config
 
 COPY logstash.conf ${LS_ETC}/logstash.conf
 RUN ln -sf ${LS_ETC}/log4j2.properties ${LS_HOME}/config/log4j2.properties
