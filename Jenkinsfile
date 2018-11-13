@@ -2,7 +2,7 @@
 
 env.ELASTICSEARCH_URL = 'http://es_venus:9200'
 
-node('aarch64') {
+node('arm32v7') {
 
     try {
 

@@ -1,4 +1,4 @@
-FROM jahrik/arm-gosu-tini:aarch64
+FROM jahrik/arm-gosu-tini:armv7l
 
 # Add logstash user and group first to make sure their IDs get assigned consistently
 RUN groupadd -r logstash && useradd -r -m -g logstash logstash
@@ -19,10 +19,10 @@ RUN mkdir -p /usr/local/lib \
 # https://discuss.elastic.co/t/i-cannot-run-logstash-on-raspberry-pi3/109789
 # /usr/share/logstash/vendor/jruby/lib/jni/arm-Linux/libjffi-1.2.so
 RUN git clone https://github.com/jnr/jffi.git
-RUN mkdir -p ${LS_HOME}/vendor/jruby/lib/jni/aarch64-Linux
+RUN mkdir -p ${LS_HOME}/vendor/jruby/lib/jni/arm-Linux
 RUN cd jffi && \
   ant jar && \
-  cp build/jni/libjffi-1.2.so ${LS_HOME}/vendor/jruby/lib/jni/aarch64-Linux/
+  cp build/jni/libjffi-1.2.so ${LS_HOME}/vendor/jruby/lib/jni/arm-Linux/
 RUN rm -rf ./jffi
 RUN apt-get remove --purge -y git ant
 
