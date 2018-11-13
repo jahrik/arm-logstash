@@ -48,11 +48,6 @@ ENV PATH ${LS_HOME}/bin:$PATH
 ENV LS_ETC /etc/logstash
 RUN mkdir -p ${LS_ETC}
 
-COPY config ${ES_PATH_CONF}
-RUN ln -sf ${ES_PATH_CONF}/log4j2.properties ${ES_HOME}/config/log4j2.properties
-RUN ln -sf ${ES_PATH_CONF}/elasticsearch.yml ${ES_HOME}/config/elasticsearch.yml
-RUN ln -sf ${ES_PATH_CONF}/jvm.options ${ES_HOME}/config/jvm.options
-
 COPY logstash.conf ${LS_ETC}/logstash.conf
 RUN ln -sf ${LS_ETC}/log4j2.properties ${LS_HOME}/config/log4j2.properties
 RUN ln -sf ${LS_ETC}/logstash.yml ${LS_HOME}/config/logstash.yml
