@@ -1,17 +1,20 @@
-version: '3'
-
+---
 services:
 
   logstash:
-    image: jahrik/arm-logstash:armv7l
+    image: jahrik/arm-logstash:latest
+    networks:
+      - elk
     environment:
-      ELASTICSEARCH_URL: "${ELASTICSEARCH_URL}"
+      ELASTICSEARCH_HOST: "${ELASTICSEARCH_HOST:-elasticsearch}"
+      LS_JAVA_OPTS: "-Xms512m -Xmx512m"
+      XPACK_MONITORING_ENABLED: "false"
     ports:
+      - 5000:5000
       - 5000:5000/udp
       - 5044:5044
-    volumes:
-      - /etc/logstash/:/etc/logstash/
-    deploy:
-      placement:
-        constraints:
-          - node.labels.arch == aarch64
+
+networks:
+  elk:
+    driver: overlay
+    external: true
