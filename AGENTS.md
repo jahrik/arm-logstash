@@ -5,9 +5,9 @@ Multi-arch Logstash image: pinned `FROM` over official `docker.elastic.co/logsta
 ## Commands
 
 ```bash
-make build                                  # build jahrik/arm-logstash:latest
+just build                                  # build jahrik/arm-logstash:latest
 docker run --rm jahrik/arm-logstash:latest logstash -t -f /usr/share/logstash/pipeline/logstash.conf
-make deploy                                 # swarm stack deploy (stack: elk)
+just deploy                                 # swarm stack deploy (stack: elk)
 ```
 
 ## CI
