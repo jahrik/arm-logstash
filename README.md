@@ -16,14 +16,14 @@ Pipeline: tcp/udp on 5000 (logspout), beats on 5044 (filebeat), output to `${ELA
 
 ```bash
 docker network create -d overlay elk   # once
-make deploy                            # stack: elk
+just deploy                            # stack: elk
 ```
 
 ## Build
 
 ```bash
-make build
-make push
+just build
+just push
 ```
 
 CI: PR builds + pipeline config validation; merge to main pushes multi-arch (amd64/arm64) to Docker Hub. No armv7: modern Logstash is 64-bit only.
